@@ -3,7 +3,7 @@ import {deflateRawSync} from 'node:zlib';
 import path from 'node:path';
 // Standard ZIP records, with a fixed timestamp to keep the downloadable source reproducible.
 export async function packageSource(destination){
- const roots=['README.md','LICENSE','package.json','package-lock.json','tsconfig.json','vite.config.ts','wrangler.jsonc','index.html','.gitignore','.env.example','.openai','.github','src','server','ml','migrations','docs','scripts','tests','public'];
+ const roots=['README.md','LICENSE','package.json','package-lock.json','tsconfig.json','vite.config.ts','wrangler.jsonc','drizzle.config.ts','index.html','.gitignore','.env.example','.openai','.github','src','server','ml','migrations','db','drizzle','docs','scripts','tests','public'];
  const files=[];async function walk(file){const stat=await import('node:fs/promises').then(fs=>fs.stat(file));if(stat.isDirectory()){for(const item of (await readdir(file)).sort())if(!['__pycache__','.DS_Store'].includes(item))await walk(path.join(file,item));}else if(!file.endsWith('.zip')&&!file.endsWith('.pyc'))files.push(file);}
  for(const root of roots)await walk(root);
  const table=Array.from({length:256},(_,i)=>{let n=i;for(let j=0;j<8;j++)n=(n&1)?0xedb88320^(n>>>1):n>>>1;return n>>>0;});

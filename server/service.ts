@@ -22,7 +22,7 @@ function filtered(readings:Reading[],siteId:string,hours:number){const selected=
 function csv(readings:Reading[]){const columns:(keyof Reading)[]=['timestamp','siteId','assetId','flowM3h','conductivityUsCm','temperatureC','ph','productionIndex'];return[columns.join(','),...readings.map(r=>columns.map(c=>r[c]).join(','))].join('\n')+'\n';}
 export async function api(req:Request,env:Env):Promise<Response>{let cookie:string|undefined;try{
  const url=new URL(req.url),path=url.pathname,method=req.method;
- if(method==='GET'&&path==='/api/health')return Response.json({ok:true,service:'aquapulse',modelVersion:'1.0.0'});
+ if(method==='GET'&&path==='/api/health'){if(!env.DB)return Response.json({ok:false,database:'binding_unavailable'},{status:503});try{await env.DB.prepare('SELECT id FROM workspaces LIMIT 1').first();return Response.json({ok:true,service:'aquapulse',modelVersion:'1.0.0',database:'ready'});}catch{return Response.json({ok:false,database:'schema_unavailable'},{status:503});}}
  if(!env.DB)throw new HttpError(503,'Database binding is unavailable.');
  if(!['GET','POST'].includes(method))throw new HttpError(405,'Method not allowed.');
  if(method==='POST'){const origin=req.headers.get('origin');if(origin&&origin!==url.origin)throw new HttpError(403,'Cross-origin write requests are not allowed.');if(req.headers.get('sec-fetch-site')==='cross-site')throw new HttpError(403,'Cross-site write requests are not allowed.');}

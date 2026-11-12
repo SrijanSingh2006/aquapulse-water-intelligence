@@ -43,7 +43,7 @@ npm run db:local
 npm run dev
 ```
 
-Open the local URL printed by Wrangler. The build creates the browser assets and Worker bundle; rerun it after changes. The local D1 database is separate from any hosted database. For an anonymous local session, use one browser profile to retain the same demonstration workspace; clearing cookies creates a new one.
+Open the local URL printed by Wrangler. The build creates the browser assets and Worker bundle; rerun it after changes. Generated hosted migrations live in `drizzle/`; run `npm run db:generate` after editing `db/schema.ts`. The local D1 database is separate from any hosted database. For an anonymous local session, use one browser profile to retain the same demonstration workspace; clearing cookies creates a new one.
 
 To check the source:
 
@@ -93,7 +93,8 @@ The default dataset uses simulated facilities. Imported values are user-provided
 ```text
 src/                    React interface and charts
 server/                 Worker API, data validation and ML inference
-migrations/             D1 / SQLite schema migrations
+db/                     Typed database schema
+drizzle/                Generated SQL migrations and metadata
 ml/                     Training, exported artifacts and model evaluation
 tests/                  Automated checks
 docs/                   API, company research, interview and publishing guides

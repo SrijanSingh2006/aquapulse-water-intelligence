@@ -3,6 +3,6 @@
   "name": "aquapulse",
   "main": "dist/server/index.js",
   "compatibility_date": "2025-09-01",
-  "d1_databases": [{"binding":"DB","database_name":"aquapulse","database_id":"00000000-0000-0000-0000-000000000000","migrations_dir":"migrations"}],
+  "d1_databases": [{"binding":"DB","database_name":"aquapulse","database_id":"00000000-0000-0000-0000-000000000001","migrations_dir":"drizzle"}],
   "dev": {"ip":"127.0.0.1","port":8787}
 }

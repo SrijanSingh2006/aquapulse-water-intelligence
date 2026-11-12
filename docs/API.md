@@ -25,7 +25,7 @@ Snapshot storage is a deliberate small-demo choice: it keeps import/reset and in
 
 | Method | Path | Request / response |
 |---|---|---|
-| GET | `/api/health` | `{ok, service, modelVersion}`. Does not initialize or validate the database. |
+| GET | `/api/health` | `{ok, service, modelVersion, database}`. Verifies the workspace table is readable; returns 503 when its binding or schema is unavailable. Does not seed data. |
 | GET | `/api/model` | Frozen model metrics, version, source and limitations. Requires a database binding. |
 | GET | `/api/dashboard?siteId=all&hours=24` | Sites, filtered readings with analyses, incidents, dataset metadata, summary and 24-hour forecasts. |
 | GET | `/api/export?siteId=all&hours=24` | CSV download for the same selected reading window. |
