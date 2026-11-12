@@ -1,0 +1,35 @@
+{
+  "name": "aquapulse",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run build && node scripts/run-local.mjs dev --local",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:local": "node scripts/run-local.mjs d1 migrations apply aquapulse --local",
+    "ml:train": "python ml/train.py"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "recharts": "^3.4.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261112.1",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "esbuild": "^0.27.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.2.0",
+    "vitest": "^3.2.0",
+    "wrangler": "^4.45.0"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

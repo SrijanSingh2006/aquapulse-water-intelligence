@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wrangler/
+.env*
+!.env.example
+__pycache__/
+.venv/
+*.zip
+*.tar.gz
+coverage/

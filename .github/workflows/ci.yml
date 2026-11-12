@@ -1,0 +1,39 @@
+name: Validate AquaPulse
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: ml/requirements.txt
+      - name: Install JavaScript dependencies
+        run: npm ci
+      - name: Install pinned training dependencies
+        run: python -m pip install -r ml/requirements.txt
+      - name: Reproduce model and Python parity fixtures
+        run: python ml/train.py
+      - name: Verify deterministic model artifacts
+        run: git diff --exit-code -- ml/model.json ml/metrics.json ml/parity-fixtures.json ml/demo-readings.json
+      - name: Check TypeScript
+        run: npm run typecheck
+      - name: Test application and exported-model inference
+        run: npm test
+      - name: Build browser assets and Worker
+        run: npm run build
