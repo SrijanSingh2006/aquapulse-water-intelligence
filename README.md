@@ -1,8 +1,10 @@
 # AquaPulse · Industrial Water Intelligence
 
+[![Validate AquaPulse](https://github.com/SrijanSingh2006/aquapulse-water-intelligence/actions/workflows/ci.yml/badge.svg)](https://github.com/SrijanSingh2006/aquapulse-water-intelligence/actions/workflows/ci.yml)
+
 A full-stack application that turns simulated industrial-water readings into anomaly alerts, demand forecasts and constrained recovery plans. Its responsive red-and-black interface combines interactive monitoring, model assurance, streamed fault replay and an auditable incident workflow.
 
-**[Live demo](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site)** · [Download source ZIP](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site/aquapulse-source.zip) · [GitHub publication guide](docs/GITHUB.md)
+**[Live demo](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site)** · **[GitHub repository](https://github.com/SrijanSingh2006/aquapulse-water-intelligence)** · [Download source ZIP](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site/aquapulse-source.zip)
 
 Built as an independent CSE/SDE portfolio project inspired by public smart-water use cases. The demo uses synthetic data and an isolated workspace for each visitor. It is not affiliated with Ecolab and does not control industrial equipment.
 
@@ -45,10 +47,11 @@ Azure is relevant to Ecolab's public digital platform, but **this application is
 
 Prerequisites: Node.js 22.13 or newer, npm, and Python 3.11 or newer for retraining. Running the app does not require a paid AI API key or a local Python server.
 
-Download and extract the source ZIP linked above, then run:
+Clone the repository and install dependencies:
 
 ```bash
-cd aquapulse
+git clone https://github.com/SrijanSingh2006/aquapulse-water-intelligence.git
+cd aquapulse-water-intelligence
 npm ci
 npm run build
 npm run db:local
@@ -56,6 +59,8 @@ npm run dev
 ```
 
 Open the local URL printed by Wrangler. The build creates the browser assets and Worker bundle; rerun it after changes. Generated hosted migrations live in `drizzle/`; run `npm run db:generate` after editing `db/schema.ts`. The local D1 database is separate from any hosted database. For an anonymous local session, use one browser profile to retain the same demonstration workspace; clearing cookies creates a new one.
+
+Alternatively, extract the source ZIP linked above, enter its `aquapulse` directory and run the same npm commands.
 
 To check the source:
 
@@ -122,7 +127,7 @@ docs/                   API, company research, interview and publishing guides
 
 The [public application](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site) runs on Cloudflare Workers with a D1 binding through Sites hosting. The repository contains its build and migration configuration. Apply database migrations to the intended environment before using an independently deployed instance. The hosted build and its SQL database are distinct resources.
 
-GitHub publication is pending: the connected integration returned HTTP 403 when creating `SrijanSingh2006/aquapulse-water-intelligence`. The complete source is available in the ZIP above. [The GitHub guide](docs/GITHUB.md) covers the one-time repository setup and upload. The included GitHub Actions workflow is configured to reproduce the ML artifacts, check TypeScript, run Vitest and build the application; a hosted CI run has not yet been verified. Azure remains a documented architecture proposal.
+The source repository is [SrijanSingh2006/aquapulse-water-intelligence](https://github.com/SrijanSingh2006/aquapulse-water-intelligence). [The GitHub guide](docs/GITHUB.md) covers local checks and contribution workflow. GitHub Actions reproduces the ML artifacts, checks TypeScript, runs Vitest and builds the application; the badge above links to each run's status. A push to GitHub does not automatically deploy the app. Azure remains a documented architecture proposal.
 
 ## Explain it in an interview
 
