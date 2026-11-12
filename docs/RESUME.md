@@ -2,7 +2,9 @@
 
 **AquaPulse — Industrial Water Intelligence**  
 React · TypeScript · Cloudflare Workers · D1/SQLite · Python · scikit-learn  
-[GitHub](https://github.com/SrijanSingh2006/aquapulse-water-intelligence) · [Live demo](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site)
+[Live demo](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site) · [Source ZIP](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site/aquapulse-source.zip)
+
+Add the GitHub link after publication; repository creation is currently blocked by the connected integration's permissions. The GitHub Actions workflow is configured in the source, but no hosted CI run has been verified yet.
 
 - Built and deployed a responsive React/TypeScript dashboard with REST APIs on Cloudflare Workers and D1/SQLite persistence for validated CSV ingestion, telemetry analysis and incident management.
 - Trained Ridge regression and Isolation Forest models in Python/scikit-learn, exported them for TypeScript inference, and verified Python–TypeScript numerical parity on synthetic industrial-water telemetry.
