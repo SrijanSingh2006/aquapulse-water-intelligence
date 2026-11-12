@@ -1,10 +1,10 @@
 # AquaPulse · Industrial Water Intelligence
 
-A full-stack portfolio application that turns simulated industrial-water readings into anomaly alerts, demand forecasts and transparent water-saving scenarios. Built as an independent SDE project inspired by public smart-water use cases. It is not affiliated with Ecolab and is not an industrial control system.
+A full-stack application that turns simulated industrial-water readings into anomaly alerts, demand forecasts and constrained recovery plans. Its responsive red-and-black interface combines interactive monitoring, model assurance, streamed fault replay and an auditable incident workflow.
 
-**Public demo:** [Open AquaPulse](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site) · [Download complete source](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site/aquapulse-source.zip)
+**[Live demo](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site)** · **[GitHub repository](https://github.com/SrijanSingh2006/aquapulse-water-intelligence)** · [Download source ZIP](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site/aquapulse-source.zip)
 
-The demo uses synthetic data and an isolated workspace for each visitor.
+Built as an independent CSE/SDE portfolio project inspired by public smart-water use cases. The demo uses synthetic data and an isolated workspace for each visitor. It is not affiliated with Ecolab and does not control industrial equipment.
 
 ## What you can demonstrate
 
@@ -46,6 +46,8 @@ Azure is relevant to Ecolab's public digital platform, but **this application is
 Prerequisites: Node.js 22.13 or newer, npm, and Python 3.11 or newer for retraining. Running the app does not require a paid AI API key or a local Python server.
 
 ```bash
+git clone https://github.com/SrijanSingh2006/aquapulse-water-intelligence.git
+cd aquapulse-water-intelligence
 npm ci
 npm run build
 npm run db:local
@@ -117,26 +119,24 @@ docs/                   API, company research, interview and publishing guides
 
 ## Deployment and GitHub
 
-The supported hosted build runs on Cloudflare Workers with a D1 binding. The repository contains its build and migration configuration. Apply database migrations to the intended environment before using an independently deployed instance. The hosted build and its SQL database are distinct resources.
+The [public application](https://aquapulse-water-intelligence.blondebiscuit2.chatgpt.site) runs on Cloudflare Workers with a D1 binding through Sites hosting. The repository contains its build and migration configuration. Apply database migrations to the intended environment before using an independently deployed instance. The hosted build and its SQL database are distinct resources.
 
-[GitHub publishing instructions](docs/GITHUB.md) explain how to create your own repository when account authorization is unavailable. No GitHub repository or Azure deployment should be claimed until those actions have succeeded.
+The source repository is [SrijanSingh2006/aquapulse-water-intelligence](https://github.com/SrijanSingh2006/aquapulse-water-intelligence). [The GitHub guide](docs/GITHUB.md) covers cloning, local checks and contribution workflow. GitHub Actions reproduces the ML artifacts, checks TypeScript, runs Vitest and builds the application. Azure remains a documented architecture proposal.
 
 ## Explain it in an interview
 
 [The walkthrough](docs/INTERVIEW.md) gives a step-by-step demo, key design decisions, ML leakage checks, tradeoffs and useful extensions. [The Azure proposal](docs/AZURE.md) maps this implementation to relevant managed services without presenting the proposal as completed work.
 
-Possible resume wording, after you have run the app and can explain the implementation:
+**AquaPulse — Industrial Water Intelligence** · React, TypeScript, Cloudflare Workers, D1/SQLite, Python, scikit-learn
 
-> **AquaPulse — Industrial Water Intelligence** · React, TypeScript, Workers, SQL, Python, scikit-learn
-> Built a full-stack industrial-water telemetry application with validated CSV ingestion, workspace-scoped SQL persistence, interactive monitoring and incident workflows.
-> Trained and exported Ridge regression and Isolation Forest models for demand estimation and anomaly detection; documented synthetic-data evaluation and served inference through a TypeScript API.
+- Built and deployed a responsive React/TypeScript dashboard with REST APIs on Cloudflare Workers and D1/SQLite persistence for validated CSV ingestion, telemetry analysis and incident management.
+- Trained Ridge regression and Isolation Forest models in Python/scikit-learn, exported them for TypeScript inference, and verified Python–TypeScript numerical parity on synthetic industrial-water telemetry.
+- Implemented Population Stability Index (PSI) drift monitoring, sensor-data quality checks and Server-Sent Events (SSE) fault replay with explicit, idempotent dataset commits.
+- Developed an exact constrained optimization engine that evaluates budget, crew hours and mutually exclusive interventions, maximizing modeled net value and exposing a cost–water Pareto frontier.
+- Engineered atomic SQL transactions with optimistic concurrency control, idempotency receipts and SHA-256-linked audit events, including chain verification against the workspace head.
+- Documented OpenAPI 3.1 APIs, added W3C trace context and Server-Timing, and configured GitHub Actions CI to run 66 Vitest tests, TypeScript checks, reproducible ML artifact validation and builds.
 
-Additional bullets for the advanced features, after you can demonstrate them:
-
-> Implemented streamed synthetic fault replay, feature-drift monitoring and exact resource-constrained recovery planning with inspectable alternatives.
-> Added atomic SQL mutations with optimistic concurrency, idempotency receipts, SHA-256-linked audit events and traceable HTTP responses.
-
-Add your verified repository/demo links and reproducible evaluation figures only. Do not claim real water savings, production users, Ecolab collaboration or a shortlisting guarantee.
+[Copy the resume section and curated keywords](docs/RESUME.md). Explain the implementation and retain the synthetic-data qualifier. The project does not establish real water savings, production users or Ecolab collaboration.
 
 ## License
 
