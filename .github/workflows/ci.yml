@@ -30,7 +30,7 @@ jobs:
       - name: Reproduce model and Python parity fixtures
         run: python ml/train.py
       - name: Verify deterministic model artifacts
-        run: git diff --exit-code -- ml/model.json ml/metrics.json ml/parity-fixtures.json ml/demo-readings.json
+        run: git diff --exit-code -- ml/model.json ml/metrics.json ml/parity-fixtures.json ml/demo-readings.json ml/reference.json
       - name: Check TypeScript
         run: npm run typecheck
       - name: Test application and exported-model inference

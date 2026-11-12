@@ -10,6 +10,8 @@
 6. **Complete a workflow.** Acknowledge an incident, add a useful note and resolve it. Reload to demonstrate SQL persistence. Use a separate browser profile to explain workspace isolation.
 7. **Show the engineering.** Open validation, a migration, a meaningful test and the training script. Run the documented checks and show actual results.
 
+For the streaming, monitoring, planning and audit features, use [the advanced recruiter demo](ADVANCED.md#a-six-minute-demonstration). Keep the demonstration focused: one changing fault, one constrained plan and one durable mutation are enough to explain the design.
+
 ## Step-by-step code reading
 
 1. Start with `server/types.ts` and trace one reading through import, validation, storage and the dashboard.
@@ -43,7 +45,21 @@
 
 **Why no chatbot?** Ecolab publicly uses generative AI, but this project's core problem has structured telemetry and measurable outputs. A fully working ingestion/ML/workflow system is defensible without an unconfigured LLM. A future assistant should retrieve source material, cite it, separate observations from advice and be evaluated for unsupported claims.
 
-**What happens if two requests update an incident?** Inspect the implemented transition/update semantics. Discuss optimistic concurrency or conditional updates as an extension if it is not implemented. Do not claim transaction guarantees the code does not provide.
+**What happens if two requests update an incident?** The update compares the workspace revision read by the request with the current SQL revision. Only one stale-snapshot contender succeeds. A unique write token gates its audit/receipt inserts inside the same D1 batch; a failed compare-and-swap gets `409` rather than silently replacing another change. Explain why this rejects a conflict instead of merging it.
+
+**What does PSI tell you?** It compares feature distributions against a frozen healthy-training reference. It can reveal a changed input regime, but cannot establish prediction error or diagnose a leak. Explain binning, smoothing, the minimum sample count and why uploaded data does not update the reference.
+
+**Why check stale or stuck telemetry separately?** A model can return a plausible answer for a frozen sensor. Gap, stale and repeated-value checks expose data-quality failures that a distribution score may miss. Explain the reference clock: historical replay must not appear fresh merely because the request arrived now.
+
+**Why SSE?** The server sends progressive, one-way frames over HTTP, which suits a bounded replay without bidirectional commands. Explain event framing, completion, cancellation and the difference between receiving a frame and persisting it. WebSockets would add unnecessary session/protocol work for this interaction.
+
+**Is the recovery plan globally optimal?** It is optimal for the bounded candidate combinations and the objective/constraints implemented by the exact search. It cannot prove that the assumptions are correct or that an unlisted intervention would not be better. Show a tighter budget or crew limit and explain the changed feasible set and selected result.
+
+**Why both idempotency and concurrency control?** They solve different write problems. An idempotency receipt recognizes an already accepted retry. Revision compare-and-swap rejects a competing stale write. The SQL batch keeps workspace, audit event and receipt together; a key reused for a different payload is a conflict.
+
+**Does a SHA-256 audit chain make the database immutable?** No. Recomputing and comparing the chain provides tamper evidence relative to a trusted head. An administrator who can rewrite the entire chain can replace it with another consistent history. External anchoring and stronger storage/access controls would be needed for independent verification.
+
+**Does a trace ID mean distributed tracing is complete?** No. W3C trace context, request IDs and `Server-Timing` establish useful request metadata. A collector, cross-service instrumentation, retention and dashboards would be additional work. Point to the actual response headers and OpenAPI contract.
 
 **Is the anonymous session secure login?** It is a demo workspace boundary using an opaque HttpOnly cookie. It does not verify identity. Production would need authentication, role-based authorization, secure session lifecycle, retention policies, rate limits, observability and a threat model.
 
@@ -62,6 +78,6 @@ Only claim completed features after verifying them. Add numeric results from act
 
 1. Add authenticated users, organization membership and stronger tenant authorization.
 2. Validate against consented, licensed real telemetry and domain-reviewed incident labels.
-3. Add ingestion idempotency keys, background processing, pagination and monitoring.
-4. Version data/model artifacts and monitor data drift and false-alert rates.
+3. Extend bounded batch ingestion into authenticated device ingestion, background processing and paginated time-series storage.
+4. Extend the frozen-reference monitoring with reviewed real labels, drift-response procedures, false-alert tracking and independently anchored audit heads.
 5. Implement and test the proposed Azure architecture if that becomes a genuine project requirement.

@@ -15,6 +15,10 @@ The demo uses synthetic data and an isolated workspace for each visitor.
 - Compare estimated savings under adjustable operating assumptions.
 - Acknowledge and resolve incidents, with follow-up notes persisted in SQL.
 - Retain an isolated demonstration workspace using an anonymous browser session.
+- Monitor feature drift against a frozen training reference and inspect data-quality findings.
+- Replay synthetic healthy, leak and sensor-drift scenarios over Server-Sent Events, then explicitly commit a selected replay.
+- Find the best recovery plan under a budget, crew limit and mutually exclusive site interventions using exact combinatorial search.
+- Inspect a SHA-256-linked audit history, idempotent write behavior and request timing/trace metadata.
 
 All initial telemetry is **synthetic**. Forecasts and estimated savings demonstrate software behavior; they are not measured field results or operating recommendations. The [model card](ml/MODEL_CARD.md) records reproducible evaluation and its limits. Held-out demand-regression results use observed operating inputs; they are not a backtest of the entire future 24-hour forecast.
 
@@ -28,13 +32,18 @@ All initial telemetry is **synthetic**. Forecasts and estimated savings demonstr
 | Workspace identity | Trusted hosted identity when available; otherwise an anonymous HttpOnly session cookie |
 | ML training | Python, scikit-learn Ridge regression and Isolation Forest |
 | ML serving | Exported model parameters evaluated in TypeScript |
+| Model monitoring | Population Stability Index and explicit data-quality checks |
+| Replay | Server-Sent Events over a streamed HTTP response |
+| Recovery planning | Exact constrained combinatorial search and Pareto alternatives |
+| Write integrity | D1 atomic batches, optimistic concurrency, idempotency receipts and SHA-256-linked audit events |
+| API observability | Request IDs, W3C trace context, Server-Timing and OpenAPI 3.1 |
 | Validation | TypeScript checks, Vitest, Python training/evaluation, GitHub Actions |
 
 Azure is relevant to Ecolab's public digital platform, but **this application is not deployed to Azure**. A proposed Azure mapping is documented separately. [Company fit and sources](docs/company-fit.md).
 
 ## Run locally
 
-Prerequisites: Node.js 22 or newer, npm, and Python 3.11 or newer for retraining. Running the app does not require a paid AI API key or a local Python server.
+Prerequisites: Node.js 22.13 or newer, npm, and Python 3.11 or newer for retraining. Running the app does not require a paid AI API key or a local Python server.
 
 ```bash
 npm ci
@@ -73,6 +82,11 @@ flowchart LR
   Browser[React dashboard] -->|same-origin JSON / CSV| Worker[TypeScript Worker API]
   Worker -->|workspace-scoped SQL| D1[(D1 / SQLite)]
   Worker --> Inference[TypeScript model inference]
+  Worker --> Assurance[Drift and data-quality checks]
+  Worker --> Planner[Exact recovery planner]
+  Worker -->|SSE synthetic replay| Browser
+  Worker --> Audit[SHA-256 audit chain]
+  Audit --> D1
   Train[Python deterministic training] --> Artifact[Exported model parameters]
   Artifact --> Inference
   Browser -->|HttpOnly session cookie| Worker
@@ -84,7 +98,7 @@ An anonymous workspace is appropriate for a synthetic portfolio demo. It is not 
 
 ## Data and API
 
-See [API and data reference](docs/API.md) for endpoint contracts, CSV columns, units, errors and isolation behavior. A reading identifies a facility and asset and contains a timestamp, flow, conductivity, temperature, pH and a production index. Preserve units when preparing an import.
+See [API and data reference](docs/API.md) for endpoint contracts, CSV columns, units, errors and isolation behavior. [The advanced engineering guide](docs/ADVANCED.md) explains model assurance, streaming fault replay, constrained recovery planning, atomic writes and a recruiter demonstration. A reading identifies a facility and asset and contains a timestamp, flow, conductivity, temperature, pH and a production index. Preserve units when preparing an import.
 
 The default dataset uses simulated facilities. Imported values are user-provided demo data, not Ecolab/customer records. Do not upload personal information, credentials or confidential operational data.
 
@@ -113,9 +127,14 @@ The supported hosted build runs on Cloudflare Workers with a D1 binding. The rep
 
 Possible resume wording, after you have run the app and can explain the implementation:
 
-> **AquaPulse — Industrial Water Intelligence** · React, TypeScript, Workers, SQL, Python, scikit-learn  
-> Built a full-stack industrial-water telemetry application with validated CSV ingestion, workspace-scoped SQL persistence, interactive monitoring and incident workflows.  
+> **AquaPulse — Industrial Water Intelligence** · React, TypeScript, Workers, SQL, Python, scikit-learn
+> Built a full-stack industrial-water telemetry application with validated CSV ingestion, workspace-scoped SQL persistence, interactive monitoring and incident workflows.
 > Trained and exported Ridge regression and Isolation Forest models for demand estimation and anomaly detection; documented synthetic-data evaluation and served inference through a TypeScript API.
+
+Additional bullets for the advanced features, after you can demonstrate them:
+
+> Implemented streamed synthetic fault replay, feature-drift monitoring and exact resource-constrained recovery planning with inspectable alternatives.
+> Added atomic SQL mutations with optimistic concurrency, idempotency receipts, SHA-256-linked audit events and traceable HTTP responses.
 
 Add your verified repository/demo links and reproducible evaluation figures only. Do not claim real water savings, production users, Ecolab collaboration or a shortlisting guarantee.
 

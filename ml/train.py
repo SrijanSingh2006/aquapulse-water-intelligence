@@ -1,6 +1,7 @@
 """Reproducible synthetic benchmark. No customer data or production-performance claim."""
 from pathlib import Path
 import json
+import hashlib
 import math
 import numpy as np
 from sklearn.ensemble import IsolationForest
@@ -98,6 +99,34 @@ def main():
         demo.append(reading)
     for name,value in [('model.json',artifact),('metrics.json',metrics),('parity-fixtures.json',fixtures),('demo-readings.json',demo)]:
         (ROOT/name).write_text(json.dumps(value,indent=None,separators=(',',':'))+'\n')
+    # Fixed monitoring reference uses healthy TRAINING observations only. It is never
+    # updated from calibration, test, demo faults, or uploaded telemetry.
+    def monitoring_features(r):
+        return dict(flowResidualRatio=(r['flowM3h']-float(reg.predict([features(r)])[0]))/BASELINES[r['siteId']],
+                    conductivityUsCm=r['conductivityUsCm'], ph=r['ph'],
+                    productionIndex=r['productionIndex'], temperatureC=r['temperatureC'])
+    def reference_features(population):
+        extracted=[monitoring_features(r) for r in population]
+        result=[]
+        labels=dict(flowResidualRatio='Normalized flow residual',conductivityUsCm='Conductivity',
+                    ph='pH',productionIndex='Production index',temperatureC='Temperature')
+        for name,label in labels.items():
+            values=np.asarray([r[name] for r in extracted],dtype=float)
+            inner=np.unique(np.quantile(values,np.arange(1,10)/10))
+            counts,_=np.histogram(values,bins=np.concatenate(([-np.inf],inner,[np.inf])))
+            result.append(dict(name=name,label=label,mean=float(np.mean(values)),
+                               edges=[None]+inner.tolist()+[None],
+                               proportions=(counts/len(values)).tolist()))
+        return result
+    reference=dict(version='1.0.0',modelVersion=artifact['version'],
+                   modelSha256=hashlib.sha256((ROOT/'model.json').read_bytes()).hexdigest(),
+                   source='Frozen healthy synthetic training data only; not Ecolab or customer data.',
+                   trainingRows=len(train),trainingStart=train[0]['timestamp'],trainingEnd=train[-1]['timestamp'],
+                   minSamples=30,psiThresholds=dict(stable=0.1,watch=0.25),smoothingEpsilon=0.0001,
+                   features=reference_features(train),
+                   bySite={site['id']:dict(rows=sum(r['siteId']==site['id'] for r in train),
+                            features=reference_features([r for r in train if r['siteId']==site['id']])) for site in SITES})
+    (ROOT/'reference.json').write_text(json.dumps(reference,indent=None,separators=(',',':'))+'\n')
     print(json.dumps(metrics,indent=2))
 
 if __name__=='__main__': main()

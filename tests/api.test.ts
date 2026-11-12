@@ -1,14 +1,14 @@
 import {DatabaseSync} from 'node:sqlite';
-import {readFileSync} from 'node:fs';
-import {beforeEach,afterEach,describe,it,expect} from 'vitest';
+import {applyMigrations,sqliteAdapter} from './db';
+import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 import {api,type Env} from '../server/service';
 import {demoReadings} from '../server/demo';
 let sql:DatabaseSync,env:Env;
-function adapter(db:DatabaseSync):D1Database{const prepare=(query:string,values:unknown[]=[]):unknown=>({bind:(...next:unknown[])=>prepare(query,next),first:async()=>db.prepare(query).get(...values as never[])||null,run:async()=>{const r=db.prepare(query).run(...values as never[]);return {success:true,meta:{changes:Number(r.changes)}};}});return {prepare:(query:string)=>prepare(query)} as D1Database;}
+
 function req(path:string,options:{method?:string;data?:unknown;cookie?:string;origin?:string;user?:string}={}){return new Request('https://aquapulse.test'+path,{method:options.method||'GET',headers:{...(options.data!==undefined?{'content-type':'application/json'}:{}),...(options.cookie?{cookie:options.cookie}:{}),...(options.origin?{origin:options.origin}:{}),...(options.user?{'oai-authenticated-user-id':options.user}:{})},...(options.data!==undefined?{body:JSON.stringify(options.data)}:{})});}
 async function dashboard(cookie?:string){const res=await api(req('/api/dashboard',{cookie}),env);return {res,data:await res.json() as any,cookie:res.headers.get('set-cookie')?.split(';')[0]||cookie};}
-beforeEach(()=>{sql=new DatabaseSync(':memory:');sql.exec(readFileSync('drizzle/0000_workspaces.sql','utf8'));env={DB:adapter(sql)};});
-afterEach(()=>sql.close());
+beforeEach(()=>{vi.spyOn(console,'info').mockImplementation(()=>undefined);sql=new DatabaseSync(':memory:');applyMigrations(sql);env={DB:sqliteAdapter(sql)};});
+afterEach(()=>{sql.close();vi.restoreAllMocks();});
 describe('API backed by the real SQLite schema',()=>{
  it('reports database readiness and detects absent schema or binding',async()=>{expect((await api(req('/api/health'),env)).status).toBe(200);sql.exec('DROP TABLE workspaces');const missing=await api(req('/api/health'),env);expect(missing.status).toBe(503);expect(await missing.json()).toEqual({ok:false,database:'schema_unavailable'});expect((await api(req('/api/health'),{} as Env)).status).toBe(503);});
  it('seeds an isolated workspace with genuine analyses and forecasts',async()=>{const {res,data,cookie}=await dashboard();expect(res.status).toBe(200);expect(cookie).toContain('aquapulse_workspace=');expect(res.headers.get('set-cookie')).toContain('HttpOnly');expect(data.readings).toHaveLength(72);expect(data.dataset.count).toBe(504);expect(data.forecasts).toHaveLength(72);expect(data.incidents.length).toBeGreaterThan(0);expect(data.summary.totalWaterM3).toBeCloseTo(data.readings.reduce((v:number,r:any)=>v+r.flowM3h,0),2);});
